@@ -24,20 +24,15 @@ app.use(cors());
 app.use(userRoute);
 app.use(doctorRoute);
 app.use(appointmentRoute)
-
+dotenv.config();
 // app.use(prescriptonRouter);
 
-
-
-
-dotenv.config({
-    path: "./config/config.env",
-});
-
 const PORT = process.env.PORT || 5000;
+
 app.get('/',(req,res)=>{
     res.send('server is connected')
 })
+
 app.listen(
     PORT,
     console.log(
