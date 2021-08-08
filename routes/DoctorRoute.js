@@ -91,10 +91,10 @@ router.post('/doctor/login', (req, res) => {
         })
 })
 
-router.delete('/doctor/delete/:id',async (req, res) => {
+router.delete('/doctor/delete/:id', async (req, res) => {
     try{
-        const id = req.params.id;
-        await cloudinary.uploader.destroy({ _id: id.cloudinary_id })
+        const id =await Doctor.findById(req.params.id) ;
+        await cloudinary.uploader.destroy(id.cloudinary_id )
         Doctor.deleteOne({ _id: id })
             .then((result) => {
                 res.status(200).json({ success: true, message: "doctor deleted" })
