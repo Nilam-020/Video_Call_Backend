@@ -4,7 +4,7 @@ const { check, validationResult } = require('express-validator')
 const bcryptjs = require('bcryptjs');
 const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
-const upload = require('../middleware/upload')
+const upload = require('../middleware/multer')
 const Doctor = require('../models/DoctorModel');
 const Patient = require('../models/userModel');
 

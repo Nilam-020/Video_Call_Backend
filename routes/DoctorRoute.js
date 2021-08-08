@@ -4,21 +4,17 @@ const { check, validationResult } = require('express-validator')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth')
-const schedule = require('../models/ScheduleModel')
 const Doctor = require('../models/DoctorModel');
 const Rating = require('../models/ratingModel');
-const async = require('async');
-const upload = require('../middleware/upload')
+const cloudinary = require('../utils/cloudinary');
+const upload = require('../middleware/multer')
 
-router.post('/doctor/register', upload.single('profile'), [
-    check('firstname', 'first name is required!').not().isEmpty(),
-    check('lastname', 'first name is required!').not().isEmpty(),
-    check('email', 'Email is required').isEmail(),
-], (req, res) => {
-    const errors = validationResult(req);
-    if (errors.isEmpty()) {
 
-        const profile = req.file.path;
+router.post('/doctor/register', upload.single('image'), async (req, res) => {
+    try {
+
+
+        const result = await cloudinary.uploader.upload(req.file.path);
         const firstname = req.body.firstname;
         const lastname = req.body.lastname;
         const address = req.body.address;
@@ -29,9 +25,11 @@ router.post('/doctor/register', upload.single('profile'), [
         const phone = req.body.phone;
         const password = req.body.password;
         const worked = req.body.worked;
+
         bcryptjs.hash(password, 10, (err, hash) => {
-            const data = new Doctor({
-                profile: profile,
+            let data = new Doctor({
+                cloudinary_id: result.public_id,
+                profile: result.secure_url,
                 firstname: firstname,
                 lastname: lastname,
                 address: address,
@@ -43,16 +41,17 @@ router.post('/doctor/register', upload.single('profile'), [
                 worked: worked,
                 password: hash
             })
-            data.save().then((result) => {
-                res.status(200).json({ success: true, message: "Doctor account created!", data: data })
-            })
-
+            res.json(result)
+            data.save()
+                .then((result) => {
+                    res.status(200).json({ success: true, message: "Doctor account created!", data: data })
+                })
                 .catch((err) => {
                     res.status(500).json({ error: err })
                 })
         })
-    } else {
-
+    } catch (err) {
+        console.log(err)
     }
 });
 
@@ -92,14 +91,19 @@ router.post('/doctor/login', (req, res) => {
         })
 })
 
-router.delete('/doctor/delete/:id', (req, res) => {
-    const id = req.params.id;
-    Doctor.deleteOne({ _id: id })
-        .then((result) => {
-            res.status(200).json({ success: true, message: "doctor deleted" })
-        }).catch((err) => {
-            res.status(500).json({ error: err })
-        })
+router.delete('/doctor/delete/:id',async (req, res) => {
+    try{
+        const id = req.params.id;
+        await cloudinary.uploader.destroy({ _id: id.cloudinary_id })
+        Doctor.deleteOne({ _id: id })
+            .then((result) => {
+                res.status(200).json({ success: true, message: "doctor deleted" })
+            }).catch((err) => {
+                res.status(500).json({ error: err })
+            })
+    }catch{
+
+    }
 })
 
 
@@ -278,6 +282,16 @@ router.put('/doctor/profile/update/:id', (req, res) => {
         .catch((err) => {
             res.status(500).json({ error: err })
         })
+})
+
+router.post('/demo', upload.single("image"), async (req, res) => {
+    try {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        res.json(result)
+    }
+    catch (err) {
+        console.log(err)
+    }
 })
 
 module.exports = router;

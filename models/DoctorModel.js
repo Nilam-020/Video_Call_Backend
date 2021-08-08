@@ -8,27 +8,22 @@ const Doctor = mongoose.model('Doctor', {
     },
     firstname: {
         type: String,
-        required: true,
         trim: true
     },
     lastname: {
         type: String,
-        required: true,
         trim: true
     },
     address: {
         type: String,
-        required: true,
         trim: true
     },
     department: {
         type: String,
-        required: true,
         trim: true
     },
     nmc: {
         type: String,
-        require: true,
         trim: true
     },
     email: {
@@ -40,13 +35,11 @@ const Doctor = mongoose.model('Doctor', {
     phone: {
         type: String,
         unique: true,
-        required: true,
         trim: true
 
     },
     password: {
         type: String,
-        required: true,
         minlength: 8
     },
     specialisation: {
@@ -80,6 +73,9 @@ const Doctor = mongoose.model('Doctor', {
         default: "Doctor",
         trim: true
     },
+    cloudinary_id: {
+        type: String
+    }
 })
 
 module.exports = Doctor;
