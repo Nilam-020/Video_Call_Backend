@@ -2,20 +2,22 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth');
 const upload = require('../middleware/upload')
-const Schedule = require('../models/ScheduleModel')
+const Appointment = require('../models/ScheduleModel')
 
-router.post('/appointment/add/:id', auth.verifiedUser, (req, res, next) => {
+router.post('/appointment/add/:id/:_id', (req, res) => {
 
     const DocID = req.params.id;
-    const UID = req.send._id;
+    const UID = req.params._id;
     const description=req.body.description;
     const VID=req.body.VID;
 
-    const scheduledata = new Schedule({DocID:DocID, UID:UID , description:description,VID:VID})
+    
+    const scheduledata = new Appointment({DocID:DocID, UID:UID , description:description,VID:VID, created_Time:new Date().toLocaleTimeString()})
     scheduledata.save()
     .then((result) => {
         res.status(201).json({ success: true, message: "appointment added" })
-    }).catch((err) => {        
+    }).catch((err) => {     
+       
         res.status(500).json({ error: err })
     })
 })
@@ -82,7 +84,7 @@ router.post('/appointment/add/:id', auth.verifiedUser, (req, res, next) => {
 // })
 
 router.get('/appointment/doctor', auth.verifiedDoctor, (req, res) => {
-    Schedule.find({DocID:req.send._id }).populate({ path: "_id", populate: { path: "DocID",match:{_id:req.send._id} }}).populate("UID")
+    Appointment.find({DocID:req.send._id }).populate({ path: "_id", populate: { path: "DocID",match:{_id:req.send._id} }}).populate("UID")
         .then((data) => {
             res.status(200).json({ data: data, success: true })
         })

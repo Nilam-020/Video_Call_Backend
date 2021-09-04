@@ -103,9 +103,9 @@ router.delete('/doctor/delete/:id', (req, res) => {
 })
 
 
-router.post('/doctor/rating/:id', auth.verifiedUser, (req, res) => {
+router.post('/doctor/rating/:id', (req, res) => {
     const docId = req.params.id;
-    const UID = req.send._id;
+    const UID = req.body.id;
     const rating = req.body.rating;
     Rating.findOne({ DocID: docId, UID: UID })
         .then((data1) => {
@@ -195,11 +195,11 @@ router.put('/doctor/rating/update/:id', auth.verifiedUser, (req, res) => {
 
 })
 
-router.get('/myRatings/:did', auth.verifiedUser, (req, res) => {
-
+router.get('/myRatings/:did/:id', (req, res) => {
+  
     Rating.findOne({
         DocID: req.params.did,
-        UID: req.send._id
+        UID: req.params.id
     }).then((data) => {
         if (data != null) {
             return res.status(200).json({ "success": true, "rating": data.rating })

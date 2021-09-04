@@ -3,17 +3,19 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const bodyParser = require('body-parser')
 const app = express();
-
 app.use(bodyParser.urlencoded({ extended: false }));
 const connectDB = require('./database/db')
 const colors = require("colors");
 const cors = require('cors')
+const path = require('path')
 
 const userRoute = require('./routes/userRoute');
 const appointmentRoute = require('./routes/appointmentRoute');
 const doctorRoute = require('./routes/DoctorRoute');
-const { mongo } = require('mongoose');
+
 app.use(express.json());
+app.use("/images",express.static(path.join(__dirname,"/images")))
+
 const server = require("http").createServer(app);
 
 const io = require("socket.io")(server, {
