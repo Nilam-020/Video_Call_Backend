@@ -15,8 +15,7 @@ const Appointment = mongoose.model('Appointment', {
     type: String
   },
   created_Date: {
-    type: Date,
-    default: Date.now
+    type: String
   },
   VID: {
     type: String

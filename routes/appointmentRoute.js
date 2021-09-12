@@ -5,14 +5,12 @@ const upload = require('../middleware/upload')
 const Appointment = require('../models/ScheduleModel')
 
 router.post('/appointment/add/:id/:_id', (req, res) => {
-
   const DocID = req.params.id;
   const UID = req.params._id;
   const description = req.body.description;
   const VID = req.body.VID;
 
-
-  const scheduledata = new Appointment({ DocID: DocID, UID: UID, description: description, VID: VID, created_Time: new Date().toLocaleTimeString() })
+  const scheduledata = new Appointment({ DocID: DocID, UID: UID, description: description, VID: VID, created_Time: new Date().toLocaleTimeString(),created_Date: new Date().toLocaleDateString()})
   scheduledata.save()
     .then((result) => {
       res.status(201).json({ success: true, message: "appointment added" })
@@ -110,7 +108,7 @@ router.get('/appointment/doctor', auth.verifiedDoctor, (req, res) => {
 router.get('/retrieveAppointmentInstance/:aid', (req, res) => {
   let appointmentId  = req.params.aid;
 
-  Appointment.findOne({
+  Appointment.find({
     "_id": appointmentId
   }).populate(
     "UID"
