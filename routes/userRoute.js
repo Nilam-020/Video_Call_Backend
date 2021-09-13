@@ -90,7 +90,7 @@ router.get('/user/:id', (req, res) => {
         })
 })
 router.get('/user', (req, res) => {
-    Patient.find()
+    Patient.find({"user_type":"Patient"})
         .then((data) => {
             return res.status(200).json({ success: true, data: data })
         })
