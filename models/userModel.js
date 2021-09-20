@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const Patient = mongoose.model('Patient', {
     profile: {
-        type: String
+        type: String,
+        default:'no-image.jpg'
     },
     firstname: {
         type: String,

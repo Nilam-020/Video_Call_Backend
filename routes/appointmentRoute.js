@@ -1,22 +1,26 @@
 const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth');
+<<<<<<< HEAD
 const upload = require('../middleware/multer')
 const Schedule = require('../models/ScheduleModel')
+=======
+const upload = require('../middleware/upload')
+const Appointment = require('../models/ScheduleModel')
+>>>>>>> 6263541ca91fe709ac0ff95ae72c5f2d55c3eb5c
 
-router.post('/appointment/add/:id', auth.verifiedUser, (req, res, next) => {
+router.post('/appointment/add/:id/:_id', (req, res) => {
+  const DocID = req.params.id;
+  const UID = req.params._id;
+  const description = req.body.description;
+  const VID = req.body.VID;
 
-    const DocID = req.params.id;
-    const UID = req.send._id;
-    const description=req.body.description;
-    const VID=req.body.VID;
-
-    const scheduledata = new Schedule({DocID:DocID, UID:UID , description:description,VID:VID})
-    scheduledata.save()
+  const scheduledata = new Appointment({ DocID: DocID, UID: UID, description: description, VID: VID, created_Time: new Date().toLocaleTimeString(),created_Date: new Date().toLocaleDateString()})
+  scheduledata.save()
     .then((result) => {
-        res.status(201).json({ success: true, message: "appointment added" })
-    }).catch((err) => {        
-        res.status(500).json({ error: err })
+      res.status(201).json({ success: true, message: "appointment added" })
+    }).catch((err) => {
+      res.status(500).json({ success: false, error: err, message: "Your request is failed please try again!!!" })
     })
 })
 
@@ -70,25 +74,72 @@ router.post('/appointment/add/:id', auth.verifiedUser, (req, res, next) => {
 //         })
 // })
 
-// router.get("/appointment/single/:id",(req,res)=>{
-//     var id = req.params.id;
-//     Appointment.findOne({"_id":id}).populate({ path: " AppointmentInstanceId", populate: { path: "doctor_id" } }).populate("UID")
-//     .then((data)=>{
-//         return res.status(200).json({"success":true,"message":"Retrieved","singleData":data})
-//     })
-//     .catch((err)=>{
-//         return res.status(401).json({"success":false,"message":""})
-//     })
-// })
+router.get("/user/:id", (req, res) => {
+  var id = req.params.id;
+  Appointment.findOne({ "_id": id }).populate({ path: " _id", populate: { path: "DocID" } }).populate("UID")
+    .then((data) => {
+      return res.status(200).json({ "success": true, "message": "Retrieved", "singleData": data })
+    })
+    .catch((err) => {
+      return res.status(401).json({ "success": false, "message": "" })
+    })
+})
 
 router.get('/appointment/doctor', auth.verifiedDoctor, (req, res) => {
-    Schedule.find({DocID:req.send._id }).populate({ path: "_id", populate: { path: "DocID",match:{_id:req.send._id} }}).populate("UID")
-        .then((data) => {
-            res.status(200).json({ data: data, success: true })
-        })
-        .catch((err) => {
-            res.status(500).json({ success: false, message: err })
-        })
+  Appointment.find({ DocID: req.send._id }).populate({ path: "_id", populate: { path: "DocID", match: { _id: req.send._id } } }).populate("UID")
+    .then((data) => {
+      res.status(200).json({ data: data, success: true })
+    })
+    .catch((err) => {
+      res.status(500).json({ success: false, message: err })
+    })
 })
+
+// router.get('/retrieveAppointmentInstance/:id',(req,res)=>{
+//     let UID = req.params.id;
+
+//     Appointment.find({
+//         "UID":UID,
+//         "status":"unread"
+//     }).populate({
+//         "path":"UID"
+//     })
+//     .then((data)=>{
+//         res.status(200).json({"success":true,"data":data,"message":"Retrieved"})
+//     }).catch((err)=>{
+//         res.status(404).json({"success":false,message:err})
+//     })
+// })
+router.get('/retrieveAppointmentInstance/:aid', (req, res) => {
+  let appointmentId  = req.params.aid;
+
+  Appointment.find({
+    "_id": appointmentId
+  }).populate(
+    "UID"
+  )
+    .then((data) => {
+      res.status(200).json({ "success": true, "data": data, "message": "Retrieved" })
+    }).catch((err) => {
+      res.status(404).json({ "success": false, message: err })
+    })
+})
+
+router.put('/makeCompleted/:aid', auth.verifiedDoctor, (req, res) => {
+  let appointmentId = req.params.aid;
+  Appointment.updateOne({ "_id": appointmentId }, {
+    $set: {
+      "status": "completed"
+    }
+  })
+    .then((result) => {
+      return res.status(200).json({ "success": true, "message": "Appointment checked." })
+    })
+    .catch((err) => {
+      return res.status(404).json({ "success": false, "message": err });
+    })
+
+})
+
 
 module.exports = router;

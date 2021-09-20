@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const Patient = require('../models/userModel');
 const Doctor = require('../models/DoctorModel');
 const Schedule = require('../models/ScheduleModel');
-const Staff = require('../models/staffModel');
-const Appointment = require('../models/appointmentModel')
 const Rating = require('../models/ratingModel')
 const { italic } = require('colors');
 // use the new name of the database
@@ -37,6 +35,23 @@ describe('User Testing', () => {
                 expect(pro_ret.firstname).toEqual('Anil');
             });
     });
+    it('User Registration', () => {
+        const user = {
+            'firstname': 'Anil',
+            'lastname': 'Dahal',
+            'address': 'jorpati',
+            'date_of_birth': '2002-05-25',
+            'email': 'anil@gmail.com',
+            'gender': 'Male',
+            'phone': '9860999888',
+            'password': '9853717171'
+        };
+        
+        return Patient.create(user)
+            .then((pro_ret) => {
+                expect(pro_ret.firstname).toEqual('Anil');
+            });
+    });
 
     //doctor registration
     it('Doctor Registration', () => {
@@ -49,8 +64,8 @@ describe('User Testing', () => {
             'nmc': '1201345',
             'email': 'anil@gmail.com',
             'gender': 'Male',
-            'phone': '9843717123',
-            'password': '9853717132',
+            'phone': '9843717124',
+            'password': '9853717135',
             'worked': 'Bir Hospital'
         };
         return Doctor.create(doctor)
@@ -74,7 +89,7 @@ describe('User Testing', () => {
             'user_type': 'Staff'
         };
 
-        return Staff.create(admin)
+        return Patient.create(admin)
             .then((admin_reg) => {
                 expect(admin_reg.user_type).toEqual('Staff');
             });
@@ -83,28 +98,26 @@ describe('User Testing', () => {
     //appointment schedule add
     it('Add Appointment', () => {
         const appointment = {
-            DocID: "607e8e14032532378c1168e2",
-            startdate: new Date(),
-            enddate: new Date(),
-            startTime: "11",
-            endTime: "17",
-            created_Date: new Date()
+            DocID: "613db744ceb02d51c4bec73d",
+            UID:"6135c4cfd9d81f4f64d45e90",
+            VID:"just for test",
+            Description:"just for test",
+            created_Date: new Date().toLocaleDateString(),
+            created_Time: new Date().toLocaleTimeString(),
+            status:"unread"
         };
 
         return Schedule.create(appointment)
             .then((schedule_add) => {
-                expect(appointment.DocID).toEqual('607e8e14032532378c1168e2');
+                expect(appointment.DocID).toEqual('613db744ceb02d51c4bec73d');
             });
     });
 
     // the code below is for delete testing
-    it('to test the delete product is working or not', async () => {
-        const status = await Appointment.deleteOne({ "_id": "607e8214df82ed3168335d4e" });
-        expect(status.ok).toBe(1);
-    });
+
     it('to test the update', async () => {
         var status = await Patient.updateOne({
-            "_id": "607e5b0c0908312db00a0f74"
+            "_id": "6135c4cfd9d81f4f64d45e90"
         },
             {
                 $set: {
@@ -116,11 +129,10 @@ describe('User Testing', () => {
     });
 
 
-
     it("ratedoctor", () => {
         const rating = {
-            DocID: "607e8e14032532378c1168e2",
-            UID: "607e5b0c0908312db00a0f74",
+            DocID: "613db744ceb02d51c4bec73d",
+            UID: "6135c4cfd9d81f4f64d45e90",
             rating: 5
         }
 
@@ -131,7 +143,7 @@ describe('User Testing', () => {
 
     //delete doctor
     it("delete doctor", async () => {
-        var status = await Doctor.deleteOne({ "_id": "607e8e14032532378c1168e2" });
+        var status = await Doctor.deleteOne({ "_id": "613db744ceb02d51c4bec73d" });
         expect(status.ok).toBe(1)
     })
 })

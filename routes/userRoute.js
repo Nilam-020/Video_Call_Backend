@@ -90,7 +90,7 @@ router.get('/user/:id', (req, res) => {
         })
 })
 router.get('/user', (req, res) => {
-    Patient.find()
+    Patient.find({"user_type":"Patient"})
         .then((data) => {
             return res.status(200).json({ success: true, data: data })
         })
@@ -165,14 +165,13 @@ router.put('/user/profile/update/:id', (req, res) => {
             res.status(500).json({ error: err })
         })
 })
-router.put('/user/picture', upload.single('profile'), auth.verifiedUser, (req, res) => {
+router.put('/user/picture/:_id', upload.single('profile'), (req, res) => {
     if (req.file == undefined) {
         return res.status(400).json({ message: "Invalid File type format. PNG and JPEG accepted" })
     }
 
-    const id = req.send._id;
+    const id = req.params._id;
     const profile = req.file.path;
-    console.log(req.file)
     Patient.findOneAndUpdate({ _id: id }, {
         profile: profile,
     })
